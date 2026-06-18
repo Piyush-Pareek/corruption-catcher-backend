@@ -1,5 +1,5 @@
 # STAGE 1: Build the Java App using Maven
-FROM maven:3.8.5-openjdk-17 AS build
+FROM eclipse-temurin:17-jdk-alpine
 WORKDIR /app
 COPY pom.xml .
 COPY src ./src
