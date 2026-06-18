@@ -1,16 +1,13 @@
-# STAGE 1: Build the Java App using Maven
-FROM eclipse-temurin:17-jdk-alpine
+# STAGE 1: Build the application (Add "AS build" at the end)
+FROM maven:3.9.6-eclipse-temurin-17-alpine AS build
 WORKDIR /app
-COPY pom.xml .
-COPY src ./src
+COPY . .
 RUN mvn clean package -DskipTests
 
-# STAGE 2: Run the App using a lightweight Java environment
-FROM openjdk:17-jdk-slim
+# STAGE 2: Run the application
+FROM eclipse-temurin:17-jdk-alpine
 WORKDIR /app
-# Copy the compiled .jar file from Stage 1
+# This line will now work perfectly because "build" is recognized!
 COPY --from=build /app/target/*.jar app.jar
-# Open the port Spring Boot runs on
 EXPOSE 8080
-# Turn on the server!
 ENTRYPOINT ["java", "-jar", "app.jar"]
