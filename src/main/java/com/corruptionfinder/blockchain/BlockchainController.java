@@ -153,6 +153,14 @@ public String syncHistoricalDataToGraph() {
     System.out.println(" Sync Complete: " + count + " transactions mapped.");
     return "Successfully synced " + count + " historical transactions into the Corruption Web!";
 }
+
+@PostMapping("/flag/{name}")
+public String flagCorruptEntity(@PathVariable String name) {
+    System.out.println("--- AI AUDITOR TRIGGERED A FLAG ---");
+    graphService.flagSuspiciousEntity(name);
+    return "SUCCESS: Entity " + name + " marked as highly suspicious.";
+}
+
 @PostMapping("/mineblock")
 public Block mineBlock(@RequestBody TransactionDetails transaction) {
     try {

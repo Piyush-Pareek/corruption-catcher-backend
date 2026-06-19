@@ -12,7 +12,14 @@ public class GraphService {
     public GraphService(GraphRepository graphRepository) {
         this.graphRepository = graphRepository;
     }
-
+    public void flagSuspiciousEntity(String entityName) {
+        // Find the corrupt entity in Neo4j
+        graphRepository.findById(entityName).ifPresent(entity -> {
+            entity.markAsSuspicious(); // Turn on the red flag
+            graphRepository.save(entity); // Save it back to the cloud
+            System.out.println("🚨 FORENSICS ALERT: " + entityName + " has been flagged in the Graph Database!");
+        });
+    }
     public void recordTransfer(String senderName, String receiverName) {
         // 1. Find the sender in the database, or create them if they are new
         FinancialEntity sender = graphRepository.findById(senderName)
