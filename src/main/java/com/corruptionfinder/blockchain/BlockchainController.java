@@ -14,7 +14,8 @@ import jakarta.annotation.PostConstruct;
 public class BlockchainController{
     @Autowired
     private Blockchain fundtracker;
-    
+    @Autowired
+    private  GraphService graphService;
     @Bean
     public CommandLineRunner initializeBlockchainNetwork() {
         return args -> {
@@ -128,6 +129,11 @@ public List<TransactionDetails> auditflagged() {
 
 // return newBlock;
 // }
+@GetMapping("/graph")
+public List<FinancialEntity> viewGraph() {
+    System.out.println("--- FORENSIC GRAPH REQUESTED ---");
+    return graphService.getCorruptionWeb();
+}
 @PostMapping("/mineblock")
 public Block mineBlock(@RequestBody TransactionDetails transaction) {
     try {
@@ -157,9 +163,14 @@ public Block mineBlock(@RequestBody TransactionDetails transaction) {
 
         Block newBlock = new Block(fundtracker.blockRepository.findAll().size(), System.currentTimeMillis(),
                 transactions, prevHash, "", 0);
+
+        // 1. THIS SAVES TO MONGODB
         fundtracker.addBlock(newBlock);
 
-        System.out.println("✅ New block successfully mined to Cloud!");
+        // 2. ---> ADD THIS LINE: THIS SAVES TO NEO4J <---
+        graphService.recordTransfer(transaction.getSender(), transaction.getReciever());
+
+        System.out.println("✅ New block successfully mined to Cloud and mapped in Neo4j!");
         return newBlock;
 
     } catch (Exception e) {
