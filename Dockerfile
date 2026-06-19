@@ -7,7 +7,7 @@ RUN mvn clean package -DskipTests
 
 # STAGE 2: Run the App using a lightweight Java environment
 # FIXED: Replaced the deleted openjdk image with eclipse-temurin
-FROM eclipse-temurin:17-jdk-slim
+FROM eclipse-temurin:17-jre
 WORKDIR /app
 # Copy the compiled .jar file from Stage 1
 COPY --from=build /app/target/*.jar app.jar
