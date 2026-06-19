@@ -134,6 +134,25 @@ public List<FinancialEntity> viewGraph() {
     System.out.println("--- FORENSIC GRAPH REQUESTED ---");
     return graphService.getCorruptionWeb();
 }
+
+@GetMapping("/sync-graph")
+public String syncHistoricalDataToGraph() {
+    System.out.println("--- INITIATING MONGODB TO NEO4J SYNC ---");
+    int count = 0;
+
+    // Loop through every single block in MongoDB
+    for (Block block : fundtracker.blockRepository.findAll()) {
+        // Loop through every transaction inside that block
+        for (TransactionDetails transaction : block.transactions) {
+            // Send the old data to the new Neo4j Graph!
+            graphService.recordTransfer(transaction.getSender(), transaction.getReciever());
+            count++;
+        }
+    }
+
+    System.out.println(" Sync Complete: " + count + " transactions mapped.");
+    return "Successfully synced " + count + " historical transactions into the Corruption Web!";
+}
 @PostMapping("/mineblock")
 public Block mineBlock(@RequestBody TransactionDetails transaction) {
     try {
