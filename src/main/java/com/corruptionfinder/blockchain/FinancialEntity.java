@@ -5,7 +5,7 @@ import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Relationship;
 import java.util.HashSet;
 import java.util.Set;
-
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @Node("FinancialEntity")
 public class FinancialEntity {
 
@@ -13,7 +13,8 @@ public class FinancialEntity {
     private String name; // The name of the company, fund, or person
     private boolean isSuspicious = false; // By default, everyone is innocent
     // This creates the actual spiderweb line pointing to where the money went
-    @Relationship(type = "TRANSFERRED_FUNDS_TO", direction = Relationship.Direction.OUTGOING)
+    @Relationship(type = "TRANSFERRED_TO", direction = Relationship.Direction.OUTGOING)
+    @JsonIgnoreProperties("recipients") // <--- THIS BREAKS THE INFINITE LOOP
     private Set<FinancialEntity> recipients = new HashSet<>();
 
     public FinancialEntity(String name) {
