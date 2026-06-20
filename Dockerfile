@@ -1,17 +1,19 @@
-# STAGE 1: Build the Java App using Maven
-FROM maven:3.8.5-openjdk-17 AS build
+# STAGE 1: Build the application
+FROM maven:3.8.5-openjdk-17 AS build 
 WORKDIR /app
+# Copy the pom.xml and download dependencies
 COPY pom.xml .
+RUN mvn dependency:go-offline
+# Copy the actual code and compile it into a .jar file
 COPY src ./src
 RUN mvn clean package -DskipTests
 
-# STAGE 2: Run the App using a lightweight Java environment
-# FIXED: Replaced the deleted openjdk image with eclipse-temurin
-
+# STAGE 2: Run the application using the upgraded Temurin environment
+FROM eclipse-temurin:17-jdk-alpine
 WORKDIR /app
-# Copy the compiled .jar file from Stage 1
+# Safely copy the .jar file from STAGE 1 (the 'build' stage)
 COPY --from=build /app/target/*.jar app.jar
-# Open the port Spring Boot runs on
+# Open the port Render needs
 EXPOSE 8080
-# Turn on the server!
+# Boot up the server
 ENTRYPOINT ["java", "-jar", "app.jar"]
