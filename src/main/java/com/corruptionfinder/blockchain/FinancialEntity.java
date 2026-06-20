@@ -34,7 +34,10 @@ public class FinancialEntity {
     public String getName() {
         return name;
     }
-
+    
+    public void setRecipients(Set<FinancialEntity> recipients) {
+        this.recipients = recipients;
+    }
     public Set<FinancialEntity> getRecipients() {
         return recipients;
     }
