@@ -16,4 +16,4 @@ COPY --from=build /app/target/*.jar app.jar
 # Open the port Render needs
 EXPOSE 8080
 # Boot up the server
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-Xmx300m", "-jar", "app.jar"]
